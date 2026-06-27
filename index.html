@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,8 +28,6 @@
       position: relative;
       overflow: hidden;
     }
-
-    /* ── Top bar ── */
     #topbar {
       background: #0f0f0f;
       padding: 48px 16px 10px;
@@ -38,12 +35,7 @@
       border-bottom: 0.5px solid #1a1a1a;
       z-index: 1000;
     }
-    .app-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
+    .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .app-name { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
     .app-name span { color: #4ade80; }
     .header-actions { display: flex; align-items: center; gap: 12px; }
@@ -51,12 +43,9 @@
       width: 34px; height: 34px; border-radius: 50%;
       background: #1a1a1a; border: 0.5px solid #2a2a2a;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: #666; font-size: 17px;
-      transition: border-color 0.15s;
+      cursor: pointer; color: #666; font-size: 17px; transition: border-color 0.15s;
     }
     .icon-btn:hover { border-color: #4ade80; color: #4ade80; }
-
-    /* ── Search ── */
     .search-bar {
       display: flex; align-items: center; gap: 8px;
       background: #1a1a1a; border: 0.5px solid #252525;
@@ -72,13 +61,9 @@
     .search-bar input::placeholder { color: #444; }
     #clearBtn { font-size: 14px; color: #444; cursor: pointer; display: none; }
     #clearBtn.visible { display: block; }
-
-    /* ── Location ── */
     .location-row { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
     .location-row i { font-size: 13px; color: #4ade80; }
     .location-row span { font-size: 11px; color: #666; }
-
-    /* ── Filters ── */
     .filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
     .filters::-webkit-scrollbar { display: none; }
     .chip {
@@ -89,40 +74,21 @@
     .chip.active { background: #4ade80; color: #0a0a0a; }
     .chip.inactive { background: #1e1e1e; color: #777; }
     .chip:hover:not(.active) { background: #252525; color: #aaa; }
-
-    /* ── Map ── */
-    #mapArea {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-      min-height: 0;
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Dark map overlay filter */
+    #mapArea { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+    #map { width: 100%; height: 100%; }
     .leaflet-tile { filter: brightness(0.45) saturate(0.6) hue-rotate(60deg); }
-
     .map-badge {
       position: absolute; top: 12px; right: 12px;
-      background: rgba(10,10,10,0.92);
-      border: 0.5px solid #2a2a2a; border-radius: 8px;
-      padding: 5px 10px; font-size: 11px; color: #4ade80; font-weight: 600;
+      background: rgba(10,10,10,0.92); border: 0.5px solid #2a2a2a;
+      border-radius: 8px; padding: 5px 10px;
+      font-size: 11px; color: #4ade80; font-weight: 600;
       z-index: 999; backdrop-filter: blur(4px);
     }
-
-    /* hide leaflet branding */
     .leaflet-control-attribution { display: none !important; }
     .leaflet-control-zoom { display: none !important; }
-
-    /* Custom marker styles */
     .custom-pin {
       width: 24px; height: 24px; border-radius: 50%;
       border: 2.5px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700; color: #fff;
       box-shadow: 0 2px 8px rgba(0,0,0,0.5);
       cursor: pointer;
     }
@@ -131,39 +97,25 @@
       background: #4ade80; border: 3px solid #0f0f0f;
       box-shadow: 0 0 0 3px rgba(74,222,128,0.3), 0 2px 8px rgba(0,0,0,0.5);
     }
-
-    /* Leaflet popup dark style */
     .leaflet-popup-content-wrapper {
-      background: #111 !important;
-      border: 0.5px solid #2a2a2a !important;
-      border-radius: 10px !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
-      color: #fff !important;
-      padding: 0 !important;
+      background: #111 !important; border: 0.5px solid #2a2a2a !important;
+      border-radius: 10px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+      color: #fff !important; padding: 0 !important;
     }
-    .leaflet-popup-content {
-      margin: 0 !important;
-      padding: 10px 13px !important;
-      min-width: 140px;
-    }
+    .leaflet-popup-content { margin: 0 !important; padding: 10px 13px !important; min-width: 160px; }
     .leaflet-popup-tip { background: #111 !important; }
     .leaflet-popup-close-button { color: #555 !important; top: 6px !important; right: 8px !important; }
     .popup-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 3px; }
-    .popup-meta { font-size: 10px; color: #666; margin-bottom: 6px; }
-    .popup-badge {
-      font-size: 9px; padding: 2px 7px; border-radius: 8px;
-      font-weight: 600; display: inline-block;
-    }
+    .popup-meta { font-size: 10px; color: #666; margin-bottom: 5px; }
+    .popup-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .popup-badge { font-size: 9px; padding: 2px 7px; border-radius: 8px; font-weight: 600; display: inline-block; }
+    .popup-dist { font-size: 10px; color: #4ade80; font-weight: 600; }
     .bnow { background: #2a1212; color: #f87171; }
     .bsoon { background: #261f08; color: #fbbf24; }
     .blater { background: #0d1f0d; color: #4ade80; }
-
-    /* ── Event list ── */
     #eventList {
-      background: #0f0f0f;
-      max-height: 210px; overflow-y: auto;
-      flex-shrink: 0; padding: 10px 14px 6px;
-      border-top: 0.5px solid #1a1a1a;
+      background: #0f0f0f; max-height: 210px; overflow-y: auto;
+      flex-shrink: 0; padding: 10px 14px 6px; border-top: 0.5px solid #1a1a1a;
     }
     #eventList::-webkit-scrollbar { width: 2px; }
     #eventList::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
@@ -185,10 +137,8 @@
     .emeta { font-size: 10px; color: #555; margin-top: 2px; }
     .eright { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
     .badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
-    .dist { font-size: 10px; color: #444; }
+    .dist { font-size: 10px; color: #4ade80; font-weight: 600; }
     .no-results { font-size: 12px; color: #444; text-align: center; padding: 14px 0; display: none; }
-
-    /* ── Bottom nav ── */
     #bottomNav {
       background: #0a0a0a; border-top: 0.5px solid #1a1a1a;
       display: flex; justify-content: space-around;
@@ -201,18 +151,18 @@
     }
     .nav-item.active { color: #4ade80; }
     .nav-item i { font-size: 20px; }
-
-    /* ── Locate me button ── */
     #locateBtn {
       position: absolute; bottom: 16px; left: 16px;
       width: 40px; height: 40px; border-radius: 50%;
       background: #0f0f0f; border: 0.5px solid #2a2a2a;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; z-index: 999; color: #4ade80; font-size: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-      transition: border-color 0.15s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5); transition: border-color 0.15s;
     }
     #locateBtn:hover { border-color: #4ade80; }
+
+    /* distance loading state */
+    .dist.loading { color: #444; font-weight: 400; }
   </style>
 </head>
 <body>
@@ -246,14 +196,17 @@
     </div>
   </div>
 
-  <!-- Real Leaflet Map -->
   <div id="mapArea">
     <div id="map"></div>
-    <div class="map-badge"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px"></i> Dabar · <span id="liveClock"></span></div>
-    <div id="locateBtn" onclick="locateMe()" title="Rasti mane"><i class="ti ti-current-location"></i></div>
+    <div class="map-badge">
+      <i class="ti ti-clock" style="font-size:10px;vertical-align:-1px"></i>
+      Dabar · <span id="liveClock"></span>
+    </div>
+    <div id="locateBtn" onclick="locateMe()">
+      <i class="ti ti-current-location"></i>
+    </div>
   </div>
 
-  <!-- Event list -->
   <div id="eventList">
     <div class="list-label" id="listLabel">Šiandien vakare</div>
 
@@ -265,7 +218,7 @@
       </div>
       <div class="eright">
         <span class="badge bnow">Dabar</span>
-        <span class="dist">320m</span>
+        <span class="dist loading" id="dist0">...</span>
       </div>
     </div>
 
@@ -277,7 +230,7 @@
       </div>
       <div class="eright">
         <span class="badge bsoon">Po 20 min</span>
-        <span class="dist">580m</span>
+        <span class="dist loading" id="dist1">...</span>
       </div>
     </div>
 
@@ -289,7 +242,7 @@
       </div>
       <div class="eright">
         <span class="badge blater">22:00</span>
-        <span class="dist">1.1km</span>
+        <span class="dist loading" id="dist2">...</span>
       </div>
     </div>
 
@@ -301,7 +254,7 @@
       </div>
       <div class="eright">
         <span class="badge blater">21:30</span>
-        <span class="dist">900m</span>
+        <span class="dist loading" id="dist3">...</span>
       </div>
     </div>
 
@@ -313,7 +266,7 @@
       </div>
       <div class="eright">
         <span class="badge blater">22:30</span>
-        <span class="dist">1.4km</span>
+        <span class="dist loading" id="dist4">...</span>
       </div>
     </div>
 
@@ -321,31 +274,15 @@
   </div>
 
   <div id="bottomNav">
-    <div class="nav-item active">
-      <i class="ti ti-map-pin"></i>
-      <span>Arti</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-list"></i>
-      <span>Visi</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-plus-circle"></i>
-      <span>Pridėti</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-heart"></i>
-      <span>Išsaugoti</span>
-    </div>
-    <div class="nav-item">
-      <i class="ti ti-user"></i>
-      <span>Profilis</span>
-    </div>
+    <div class="nav-item active"><i class="ti ti-map-pin"></i><span>Arti</span></div>
+    <div class="nav-item"><i class="ti ti-list"></i><span>Visi</span></div>
+    <div class="nav-item"><i class="ti ti-plus-circle"></i><span>Pridėti</span></div>
+    <div class="nav-item"><i class="ti ti-heart"></i><span>Išsaugoti</span></div>
+    <div class="nav-item"><i class="ti ti-user"></i><span>Profilis</span></div>
   </div>
 
 </div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   // ── Clock ──
@@ -358,41 +295,66 @@
   updateClock();
   setInterval(updateClock, 30000);
 
-  // ── Event data (real Kaunas coordinates) ──
+  // ── Events (real Kaunas coordinates) ──
   const events = [
-    {
-      id: 0, name: 'Gyvoji muzika — Džiazas',
-      meta: 'Keistuoliai · Laisvės al. 93',
-      badge: '<span class="popup-badge bnow">Dabar</span>',
-      lat: 54.8985, lng: 23.9036, color: '#f87171'
-    },
-    {
-      id: 1, name: 'Gatvės maisto mugė',
-      meta: 'Rotušės aikštė · Nemokama',
-      badge: '<span class="popup-badge bsoon">Po 20 min</span>',
-      lat: 54.8972, lng: 23.9405, color: '#fbbf24'
-    },
-    {
-      id: 2, name: 'Atviras kinas lauke',
-      meta: 'Santakos parkas · Nemokama',
-      badge: '<span class="popup-badge blater">22:00</span>',
-      lat: 54.8920, lng: 23.9194, color: '#4ade80'
-    },
-    {
-      id: 3, name: 'Vinilo plokštelių mugė',
-      meta: 'Meno parkas · Nemokama',
-      badge: '<span class="popup-badge blater">21:30</span>',
-      lat: 54.9010, lng: 23.9280, color: '#a78bfa'
-    },
-    {
-      id: 4, name: 'Krepšinis — Žalgiris',
-      meta: 'Žalgirio arena · 22:30',
-      badge: '<span class="popup-badge blater">22:30</span>',
-      lat: 54.8956, lng: 23.9140, color: '#f97316'
-    },
+    { id:0, name:'Gyvoji muzika — Džiazas', meta:'Keistuoliai · Laisvės al. 93', badge:'<span class="popup-badge bnow">Dabar</span>',     lat:54.8985, lng:23.9036, color:'#f87171' },
+    { id:1, name:'Gatvės maisto mugė',       meta:'Rotušės aikštė · Nemokama',    badge:'<span class="popup-badge bsoon">Po 20 min</span>', lat:54.8972, lng:23.9405, color:'#fbbf24' },
+    { id:2, name:'Atviras kinas lauke',      meta:'Santakos parkas · Nemokama',   badge:'<span class="popup-badge blater">22:00</span>',     lat:54.8920, lng:23.9194, color:'#4ade80' },
+    { id:3, name:'Vinilo plokštelių mugė',   meta:'Meno parkas · Nemokama',       badge:'<span class="popup-badge blater">21:30</span>',     lat:54.9010, lng:23.9280, color:'#a78bfa' },
+    { id:4, name:'Krepšinis — Žalgiris',     meta:'Žalgirio arena · 22:30',       badge:'<span class="popup-badge blater">22:30</span>',     lat:54.8956, lng:23.9140, color:'#f97316' },
   ];
 
-  // ── Init map — centered on Kaunas ──
+  // ── Haversine formula — calculates real distance in metres ──
+  function haversine(lat1, lng1, lat2, lng2) {
+    const R = 6371000; // Earth radius in metres
+    const toRad = deg => deg * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  // ── Format distance: metres under 1000, km above ──
+  function formatDist(metres) {
+    if (metres < 1000) {
+      return Math.round(metres) + 'm';
+    } else {
+      return (metres / 1000).toFixed(1) + 'km';
+    }
+  }
+
+  // ── Update all distance labels from a given user position ──
+  function updateDistances(userLat, userLng) {
+    events.forEach(ev => {
+      const metres = haversine(userLat, userLng, ev.lat, ev.lng);
+      const label = formatDist(metres);
+      const el = document.getElementById('dist' + ev.id);
+      if (el) {
+        el.textContent = label;
+        el.classList.remove('loading');
+      }
+      // refresh popup if open
+      if (markers[ev.id] && markers[ev.id].isPopupOpen()) {
+        markers[ev.id].setPopupContent(buildPopup(ev, label));
+      }
+    });
+  }
+
+  // ── Build popup HTML ──
+  function buildPopup(ev, distLabel) {
+    return `
+      <div class="popup-name">${ev.name}</div>
+      <div class="popup-meta">${ev.meta}</div>
+      <div class="popup-row">
+        ${ev.badge}
+        <span class="popup-dist">${distLabel}</span>
+      </div>`;
+  }
+
+  // ── Map init ──
   const map = L.map('map', {
     center: [54.8985, 23.9280],
     zoom: 14,
@@ -400,21 +362,21 @@
     attributionControl: false,
   });
 
-  // OpenStreetMap tiles (free, no API key)
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
   }).addTo(map);
 
-  // ── You marker ──
+  // You marker
   const youIcon = L.divIcon({
     className: '',
     html: '<div class="you-marker"></div>',
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   });
-  let youMarker = L.marker([54.8985, 23.9280], { icon: youIcon }).addTo(map);
+  let userLat = 54.8985, userLng = 23.9280;
+  let youMarker = L.marker([userLat, userLng], { icon: youIcon }).addTo(map);
 
-  // ── Event markers ──
+  // Event markers
   const markers = [];
   events.forEach(ev => {
     const icon = L.divIcon({
@@ -426,48 +388,56 @@
     });
     const marker = L.marker([ev.lat, ev.lng], { icon })
       .addTo(map)
-      .bindPopup(`
-        <div class="popup-name">${ev.name}</div>
-        <div class="popup-meta">${ev.meta}</div>
-        ${ev.badge}
-      `, { closeButton: true, maxWidth: 200 });
-
+      .bindPopup(buildPopup(ev, '...'), { closeButton: true, maxWidth: 200 });
     marker.on('click', () => selectEvent(ev.id));
     markers.push(marker);
   });
 
-  // ── Select event — highlights card + flies map to pin ──
+  // ── Select event ──
   function selectEvent(i) {
     document.querySelectorAll('.ecard').forEach((c, j) => c.classList.toggle('active', j === i));
     map.flyTo([events[i].lat, events[i].lng], 15, { duration: 0.8 });
-    setTimeout(() => markers[i].openPopup(), 900);
-    const card = document.getElementById('c' + i);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setTimeout(() => {
+      const dist = document.getElementById('dist' + i)?.textContent || '...';
+      markers[i].setPopupContent(buildPopup(events[i], dist));
+      markers[i].openPopup();
+    }, 900);
+    document.getElementById('c' + i)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // ── Locate me ──
+  // ── Geolocation: get real position ──
+  function onPosition(pos) {
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+    youMarker.setLatLng([userLat, userLng]);
+    map.setView([userLat, userLng], 14);
+    document.getElementById('locationText').textContent = 'Vieta nustatyta · ' + events.length + ' renginiai šalia';
+    updateDistances(userLat, userLng);
+  }
+
+  function onPositionError() {
+    // fallback: use Kaunas city centre as default position
+    document.getElementById('locationText').textContent = 'Kaunas · ' + events.length + ' renginiai šalia';
+    updateDistances(userLat, userLng);
+  }
+
+  // Try to get real location on load
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(onPosition, onPositionError, {
+      enableHighAccuracy: true,
+      timeout: 8000,
+    });
+  } else {
+    onPositionError();
+  }
+
+  // ── Locate me button ──
   function locateMe() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(pos => {
-      const { latitude: lat, longitude: lng } = pos.coords;
-      youMarker.setLatLng([lat, lng]);
-      map.flyTo([lat, lng], 15, { duration: 1 });
-      document.getElementById('locationText').textContent = 'Tavo vieta rasta';
-    }, () => {
-      document.getElementById('locationText').textContent = 'Kaunas, Laisvės al.';
-    });
-  }
-
-  // Try to locate on load
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-      const { latitude: lat, longitude: lng } = pos.coords;
-      youMarker.setLatLng([lat, lng]);
-      map.setView([lat, lng], 14);
-      document.getElementById('locationText').textContent = 'Vieta nustatyta · 5 renginiai šalia';
-    }, () => {
-      document.getElementById('locationText').textContent = 'Kaunas · 5 renginiai šalia';
-    });
+      onPosition(pos);
+      map.flyTo([pos.coords.latitude, pos.coords.longitude], 15, { duration: 1 });
+    }, onPositionError, { enableHighAccuracy: true });
   }
 
   // ── Filters ──
@@ -479,10 +449,9 @@
   // ── Search ──
   function doSearch(val) {
     const q = val.toLowerCase().trim();
-    const cards = document.querySelectorAll('.ecard');
     document.getElementById('clearBtn').classList.toggle('visible', val.length > 0);
     let found = 0;
-    cards.forEach(c => {
+    document.querySelectorAll('.ecard').forEach(c => {
       const match = !q || (c.dataset.search || '').includes(q);
       c.classList.toggle('hidden', !match);
       if (match) found++;
