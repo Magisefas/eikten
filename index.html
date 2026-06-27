@@ -9,8 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       height: 100%;
@@ -19,8 +20,6 @@
       color: #fff;
       overflow: hidden;
     }
-
-    /* ── App shell ── */
     #app {
       display: flex;
       flex-direction: column;
@@ -37,6 +36,7 @@
       padding: 48px 16px 10px;
       flex-shrink: 0;
       border-bottom: 0.5px solid #1a1a1a;
+      z-index: 1000;
     }
     .app-header {
       display: flex;
@@ -44,124 +44,138 @@
       justify-content: space-between;
       margin-bottom: 10px;
     }
-    .app-name {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #fff;
-    }
+    .app-name { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
     .app-name span { color: #4ade80; }
     .header-actions { display: flex; align-items: center; gap: 12px; }
     .icon-btn {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      border: 0.5px solid #2a2a2a;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #1a1a1a; border: 0.5px solid #2a2a2a;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      color: #666;
-      font-size: 17px;
+      cursor: pointer; color: #666; font-size: 17px;
       transition: border-color 0.15s;
     }
     .icon-btn:hover { border-color: #4ade80; color: #4ade80; }
 
-    /* ── Search bar ── */
+    /* ── Search ── */
     .search-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1a1a;
-      border: 0.5px solid #252525;
-      border-radius: 12px;
-      padding: 9px 12px;
-      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 8px;
+      background: #1a1a1a; border: 0.5px solid #252525;
+      border-radius: 12px; padding: 9px 12px; margin-bottom: 10px;
       transition: border-color 0.15s;
     }
     .search-bar:focus-within { border-color: #4ade80; }
     .search-bar i { font-size: 16px; color: #555; flex-shrink: 0; }
     .search-bar input {
       background: none; border: none; outline: none;
-      font-size: 13px; color: #fff; flex: 1;
-      font-family: inherit;
+      font-size: 13px; color: #fff; flex: 1; font-family: inherit;
     }
     .search-bar input::placeholder { color: #444; }
     #clearBtn { font-size: 14px; color: #444; cursor: pointer; display: none; }
     #clearBtn.visible { display: block; }
 
-    /* ── Location row ── */
-    .location-row {
-      display: flex; align-items: center; gap: 5px;
-      margin-bottom: 10px;
-    }
+    /* ── Location ── */
+    .location-row { display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
     .location-row i { font-size: 13px; color: #4ade80; }
     .location-row span { font-size: 11px; color: #666; }
 
-    /* ── Filter chips ── */
-    .filters {
-      display: flex; gap: 6px;
-      overflow-x: auto; padding-bottom: 2px;
-    }
+    /* ── Filters ── */
+    .filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
     .filters::-webkit-scrollbar { display: none; }
     .chip {
       border-radius: 20px; padding: 5px 12px;
-      font-size: 11px; font-weight: 500;
-      white-space: nowrap; cursor: pointer;
-      border: none; font-family: inherit;
-      transition: all 0.15s;
+      font-size: 11px; font-weight: 500; white-space: nowrap;
+      cursor: pointer; border: none; font-family: inherit; transition: all 0.15s;
     }
     .chip.active { background: #4ade80; color: #0a0a0a; }
     .chip.inactive { background: #1e1e1e; color: #777; }
     .chip:hover:not(.active) { background: #252525; color: #aaa; }
 
-    /* ── Map area ── */
+    /* ── Map ── */
     #mapArea {
       flex: 1;
-      background: #182018;
       position: relative;
       overflow: hidden;
+      min-height: 0;
     }
-    #mapSvg { width: 100%; height: 100%; }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Dark map overlay filter */
+    .leaflet-tile { filter: brightness(0.45) saturate(0.6) hue-rotate(60deg); }
+
     .map-badge {
       position: absolute; top: 12px; right: 12px;
-      background: rgba(10,10,10,0.9);
-      border: 0.5px solid #2a2a2a;
-      border-radius: 8px; padding: 5px 10px;
-      font-size: 11px; color: #4ade80; font-weight: 600;
-      backdrop-filter: blur(4px);
+      background: rgba(10,10,10,0.92);
+      border: 0.5px solid #2a2a2a; border-radius: 8px;
+      padding: 5px 10px; font-size: 11px; color: #4ade80; font-weight: 600;
+      z-index: 999; backdrop-filter: blur(4px);
     }
-    .map-tooltip {
-      position: absolute;
-      background: #111; border: 0.5px solid #2a2a2a;
-      border-radius: 10px; padding: 7px 11px;
-      pointer-events: none; opacity: 0;
-      transition: opacity 0.2s; z-index: 5;
-      min-width: 120px;
+
+    /* hide leaflet branding */
+    .leaflet-control-attribution { display: none !important; }
+    .leaflet-control-zoom { display: none !important; }
+
+    /* Custom marker styles */
+    .custom-pin {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 2.5px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
     }
-    .map-tooltip .tt-name { font-size: 12px; font-weight: 600; color: #fff; }
-    .map-tooltip .tt-sub { font-size: 10px; color: #666; margin-top: 2px; }
+    .you-marker {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #4ade80; border: 3px solid #0f0f0f;
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.3), 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    /* Leaflet popup dark style */
+    .leaflet-popup-content-wrapper {
+      background: #111 !important;
+      border: 0.5px solid #2a2a2a !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+      color: #fff !important;
+      padding: 0 !important;
+    }
+    .leaflet-popup-content {
+      margin: 0 !important;
+      padding: 10px 13px !important;
+      min-width: 140px;
+    }
+    .leaflet-popup-tip { background: #111 !important; }
+    .leaflet-popup-close-button { color: #555 !important; top: 6px !important; right: 8px !important; }
+    .popup-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+    .popup-meta { font-size: 10px; color: #666; margin-bottom: 6px; }
+    .popup-badge {
+      font-size: 9px; padding: 2px 7px; border-radius: 8px;
+      font-weight: 600; display: inline-block;
+    }
+    .bnow { background: #2a1212; color: #f87171; }
+    .bsoon { background: #261f08; color: #fbbf24; }
+    .blater { background: #0d1f0d; color: #4ade80; }
 
     /* ── Event list ── */
     #eventList {
       background: #0f0f0f;
-      max-height: 220px;
-      overflow-y: auto;
-      flex-shrink: 0;
-      padding: 10px 14px 6px;
+      max-height: 210px; overflow-y: auto;
+      flex-shrink: 0; padding: 10px 14px 6px;
       border-top: 0.5px solid #1a1a1a;
     }
     #eventList::-webkit-scrollbar { width: 2px; }
     #eventList::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
     .list-label {
-      font-size: 10px; color: #444;
-      font-weight: 600; letter-spacing: 0.06em;
-      text-transform: uppercase; margin-bottom: 8px;
+      font-size: 10px; color: #444; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
     }
     .ecard {
       background: #161616; border: 0.5px solid #222;
       border-radius: 12px; padding: 10px 12px;
-      display: flex; gap: 10px;
-      cursor: pointer; transition: border-color 0.15s;
-      margin-bottom: 7px;
+      display: flex; gap: 10px; cursor: pointer;
+      transition: border-color 0.15s; margin-bottom: 7px;
     }
     .ecard:hover, .ecard.active { border-color: #4ade80; }
     .ecard.hidden { display: none; }
@@ -171,49 +185,39 @@
     .emeta { font-size: 10px; color: #555; margin-top: 2px; }
     .eright { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
     .badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
-    .bnow { background: #2a1212; color: #f87171; }
-    .bsoon { background: #261f08; color: #fbbf24; }
-    .blater { background: #0d1f0d; color: #4ade80; }
     .dist { font-size: 10px; color: #444; }
     .no-results { font-size: 12px; color: #444; text-align: center; padding: 14px 0; display: none; }
 
     /* ── Bottom nav ── */
     #bottomNav {
-      background: #0a0a0a;
-      border-top: 0.5px solid #1a1a1a;
+      background: #0a0a0a; border-top: 0.5px solid #1a1a1a;
       display: flex; justify-content: space-around;
-      padding: 8px 0 24px;
-      flex-shrink: 0;
+      padding: 8px 0 24px; flex-shrink: 0;
     }
     .nav-item {
-      display: flex; flex-direction: column;
-      align-items: center; gap: 3px;
-      font-size: 9px; color: #444;
-      cursor: pointer; transition: color 0.15s;
-      padding: 0 8px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; font-size: 9px; color: #444; cursor: pointer;
+      transition: color 0.15s; padding: 0 8px;
     }
     .nav-item.active { color: #4ade80; }
     .nav-item i { font-size: 20px; }
 
-    /* ── You pulse animation ── */
-    @keyframes youpulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 0; }
+    /* ── Locate me button ── */
+    #locateBtn {
+      position: absolute; bottom: 16px; left: 16px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #0f0f0f; border: 0.5px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 999; color: #4ade80; font-size: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      transition: border-color 0.15s;
     }
-    .you-pulse { animation: youpulse 2s ease-in-out infinite; }
-
-    /* ── Pin pulse ── */
-    @keyframes pinpulse {
-      0%, 100% { opacity: 0.25; }
-      50% { opacity: 0.55; }
-    }
-    .pin-glow { animation: pinpulse 2.5s ease-in-out infinite; }
+    #locateBtn:hover { border-color: #4ade80; }
   </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- Top bar -->
   <div id="topbar">
     <div class="app-header">
       <div class="app-name">eik<span>ten</span></div>
@@ -222,18 +226,15 @@
         <div class="icon-btn"><i class="ti ti-user"></i></div>
       </div>
     </div>
-
     <div class="search-bar">
       <i class="ti ti-search"></i>
       <input type="text" id="searchInput" placeholder="Ieškoti renginių..." autocomplete="off" oninput="doSearch(this.value)" />
       <i class="ti ti-x" id="clearBtn" onclick="clearSearch()"></i>
     </div>
-
     <div class="location-row">
       <i class="ti ti-map-pin"></i>
       <span id="locationText">Nustatoma vieta...</span>
     </div>
-
     <div class="filters">
       <button class="chip active" onclick="setChip(this,'all')">Visi</button>
       <button class="chip inactive" onclick="setChip(this,'music')"><i class="ti ti-music" style="font-size:11px"></i> Muzika</button>
@@ -245,69 +246,11 @@
     </div>
   </div>
 
-  <!-- Map -->
+  <!-- Real Leaflet Map -->
   <div id="mapArea">
-    <svg id="mapSvg" viewBox="0 0 390 300" preserveAspectRatio="xMidYMid slice">
-      <rect width="390" height="300" fill="#182018"/>
-      <!-- Grid -->
-      <line x1="0" y1="60" x2="390" y2="60" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="0" y1="120" x2="390" y2="120" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="0" y1="180" x2="390" y2="180" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="0" y1="240" x2="390" y2="240" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="78" y1="0" x2="78" y2="300" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="156" y1="0" x2="156" y2="300" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="234" y1="0" x2="234" y2="300" stroke="#1d2a1d" stroke-width="0.5"/>
-      <line x1="312" y1="0" x2="312" y2="300" stroke="#1d2a1d" stroke-width="0.5"/>
-      <!-- Roads -->
-      <path d="M0 118 Q100 110 200 122 Q270 130 390 115" stroke="#253025" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M0 195 Q120 188 240 196 Q310 200 390 192" stroke="#253025" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path d="M145 0 Q150 80 154 150 Q156 210 150 300" stroke="#253025" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M248 0 L245 300" stroke="#253025" stroke-width="4" fill="none"/>
-      <path d="M0 60 Q60 58 78 80" stroke="#253025" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <!-- Buildings -->
-      <rect x="20" y="30" width="55" height="30" rx="3" fill="#1d281d"/>
-      <rect x="90" y="22" width="40" height="24" rx="3" fill="#1d281d"/>
-      <rect x="165" y="28" width="65" height="36" rx="3" fill="#1d281d"/>
-      <rect x="260" y="65" width="50" height="28" rx="3" fill="#1d281d"/>
-      <rect x="325" y="30" width="45" height="35" rx="3" fill="#1d281d"/>
-      <rect x="20" y="138" width="80" height="28" rx="3" fill="#1d281d"/>
-      <rect x="165" y="135" width="55" height="34" rx="3" fill="#1d281d"/>
-      <rect x="260" y="132" width="65" height="30" rx="3" fill="#1d281d"/>
-      <rect x="22" y="210" width="75" height="32" rx="3" fill="#1d281d"/>
-      <rect x="265" y="208" width="75" height="36" rx="3" fill="#1d281d"/>
-
-      <!-- You -->
-      <circle cx="200" cy="148" r="24" fill="#4ade8010" class="you-pulse"/>
-      <circle cx="200" cy="148" r="8" fill="#4ade80"/>
-      <circle cx="200" cy="148" r="3.5" fill="#0f0f0f"/>
-
-      <!-- Event pins -->
-      <g class="pin-glow"><circle cx="110" cy="88" r="16" fill="#f8717120"/></g>
-      <circle cx="110" cy="88" r="9" fill="#f87171" style="cursor:pointer" onclick="selectEvent(0)"/>
-      <circle cx="110" cy="88" r="3.5" fill="#fff" style="pointer-events:none"/>
-
-      <g class="pin-glow"><circle cx="288" cy="98" r="16" fill="#fbbf2420"/></g>
-      <circle cx="288" cy="98" r="9" fill="#fbbf24" style="cursor:pointer" onclick="selectEvent(1)"/>
-      <circle cx="288" cy="98" r="3.5" fill="#0f0f0f" style="pointer-events:none"/>
-
-      <g class="pin-glow"><circle cx="190" cy="220" r="16" fill="#4ade8020"/></g>
-      <circle cx="190" cy="220" r="9" fill="#4ade80" style="cursor:pointer" onclick="selectEvent(2)"/>
-      <circle cx="190" cy="220" r="3.5" fill="#0f0f0f" style="pointer-events:none"/>
-
-      <g class="pin-glow"><circle cx="60" cy="175" r="16" fill="#a78bfa20"/></g>
-      <circle cx="60" cy="175" r="9" fill="#a78bfa" style="cursor:pointer" onclick="selectEvent(3)"/>
-      <circle cx="60" cy="175" r="3.5" fill="#fff" style="pointer-events:none"/>
-
-      <g class="pin-glow"><circle cx="330" cy="175" r="16" fill="#f9731620"/></g>
-      <circle cx="330" cy="175" r="9" fill="#f97316" style="cursor:pointer" onclick="selectEvent(4)"/>
-      <circle cx="330" cy="175" r="3.5" fill="#fff" style="pointer-events:none"/>
-    </svg>
-
+    <div id="map"></div>
     <div class="map-badge"><i class="ti ti-clock" style="font-size:10px;vertical-align:-1px"></i> Dabar · <span id="liveClock"></span></div>
-    <div class="map-tooltip" id="mapTooltip">
-      <div class="tt-name" id="ttName"></div>
-      <div class="tt-sub" id="ttSub"></div>
-    </div>
+    <div id="locateBtn" onclick="locateMe()" title="Rasti mane"><i class="ti ti-current-location"></i></div>
   </div>
 
   <!-- Event list -->
@@ -377,7 +320,6 @@
     <div class="no-results" id="noResults">Nerasta renginių</div>
   </div>
 
-  <!-- Bottom nav -->
   <div id="bottomNav">
     <div class="nav-item active">
       <i class="ti ti-map-pin"></i>
@@ -403,8 +345,10 @@
 
 </div>
 
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // ── Live clock ──
+  // ── Clock ──
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2,'0');
@@ -414,45 +358,116 @@
   updateClock();
   setInterval(updateClock, 30000);
 
-  // ── Geolocation ──
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      () => { document.getElementById('locationText').textContent = 'Kaunas — 5 renginiai šalia'; },
-      () => { document.getElementById('locationText').textContent = 'Kaunas, Laisvės al.'; }
-    );
-  }
-
-  // ── Event data ──
+  // ── Event data (real Kaunas coordinates) ──
   const events = [
-    { name: 'Gyvoji muzika — Džiazas', sub: 'Keistuoliai · Dabar', px: 110, py: 88 },
-    { name: 'Gatvės maisto mugė',       sub: 'Rotušės a. · Po 20 min', px: 288, py: 98 },
-    { name: 'Atviras kinas lauke',      sub: 'Santakos parkas · 22:00', px: 190, py: 220 },
-    { name: 'Vinilo plokštelių mugė',   sub: 'Meno parkas · 21:30', px: 60, py: 175 },
-    { name: 'Krepšinis — Žalgiris',     sub: 'Žalgirio arena · 22:30', px: 330, py: 175 },
+    {
+      id: 0, name: 'Gyvoji muzika — Džiazas',
+      meta: 'Keistuoliai · Laisvės al. 93',
+      badge: '<span class="popup-badge bnow">Dabar</span>',
+      lat: 54.8985, lng: 23.9036, color: '#f87171'
+    },
+    {
+      id: 1, name: 'Gatvės maisto mugė',
+      meta: 'Rotušės aikštė · Nemokama',
+      badge: '<span class="popup-badge bsoon">Po 20 min</span>',
+      lat: 54.8972, lng: 23.9405, color: '#fbbf24'
+    },
+    {
+      id: 2, name: 'Atviras kinas lauke',
+      meta: 'Santakos parkas · Nemokama',
+      badge: '<span class="popup-badge blater">22:00</span>',
+      lat: 54.8920, lng: 23.9194, color: '#4ade80'
+    },
+    {
+      id: 3, name: 'Vinilo plokštelių mugė',
+      meta: 'Meno parkas · Nemokama',
+      badge: '<span class="popup-badge blater">21:30</span>',
+      lat: 54.9010, lng: 23.9280, color: '#a78bfa'
+    },
+    {
+      id: 4, name: 'Krepšinis — Žalgiris',
+      meta: 'Žalgirio arena · 22:30',
+      badge: '<span class="popup-badge blater">22:30</span>',
+      lat: 54.8956, lng: 23.9140, color: '#f97316'
+    },
   ];
 
+  // ── Init map — centered on Kaunas ──
+  const map = L.map('map', {
+    center: [54.8985, 23.9280],
+    zoom: 14,
+    zoomControl: false,
+    attributionControl: false,
+  });
+
+  // OpenStreetMap tiles (free, no API key)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+  }).addTo(map);
+
+  // ── You marker ──
+  const youIcon = L.divIcon({
+    className: '',
+    html: '<div class="you-marker"></div>',
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+  });
+  let youMarker = L.marker([54.8985, 23.9280], { icon: youIcon }).addTo(map);
+
+  // ── Event markers ──
+  const markers = [];
+  events.forEach(ev => {
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="custom-pin" style="background:${ev.color}"></div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+      popupAnchor: [0, -14],
+    });
+    const marker = L.marker([ev.lat, ev.lng], { icon })
+      .addTo(map)
+      .bindPopup(`
+        <div class="popup-name">${ev.name}</div>
+        <div class="popup-meta">${ev.meta}</div>
+        ${ev.badge}
+      `, { closeButton: true, maxWidth: 200 });
+
+    marker.on('click', () => selectEvent(ev.id));
+    markers.push(marker);
+  });
+
+  // ── Select event — highlights card + flies map to pin ──
   function selectEvent(i) {
     document.querySelectorAll('.ecard').forEach((c, j) => c.classList.toggle('active', j === i));
-    const map = document.getElementById('mapArea');
-    const svg = document.getElementById('mapSvg');
-    const vbW = 390, vbH = 300;
-    const rect = map.getBoundingClientRect();
-    const scaleX = rect.width / vbW;
-    const scaleY = rect.height / vbH;
-    const tt = document.getElementById('mapTooltip');
-    document.getElementById('ttName').textContent = events[i].name;
-    document.getElementById('ttSub').textContent = events[i].sub;
-    let tx = events[i].px * scaleX - 60;
-    let ty = events[i].py * scaleY - 50;
-    tx = Math.max(6, Math.min(tx, rect.width - 140));
-    ty = Math.max(6, Math.min(ty, rect.height - 56));
-    tt.style.left = tx + 'px';
-    tt.style.top = ty + 'px';
-    tt.style.opacity = '1';
-    setTimeout(() => { tt.style.opacity = '0'; }, 2200);
-    // scroll card into view
+    map.flyTo([events[i].lat, events[i].lng], 15, { duration: 0.8 });
+    setTimeout(() => markers[i].openPopup(), 900);
     const card = document.getElementById('c' + i);
     if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ── Locate me ──
+  function locateMe() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      youMarker.setLatLng([lat, lng]);
+      map.flyTo([lat, lng], 15, { duration: 1 });
+      document.getElementById('locationText').textContent = 'Tavo vieta rasta';
+    }, () => {
+      document.getElementById('locationText').textContent = 'Kaunas, Laisvės al.';
+    });
+  }
+
+  // Try to locate on load
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      youMarker.setLatLng([lat, lng]);
+      map.setView([lat, lng], 14);
+      document.getElementById('locationText').textContent = 'Vieta nustatyta · 5 renginiai šalia';
+    }, () => {
+      document.getElementById('locationText').textContent = 'Kaunas · 5 renginiai šalia';
+    });
   }
 
   // ── Filters ──
@@ -465,18 +480,15 @@
   function doSearch(val) {
     const q = val.toLowerCase().trim();
     const cards = document.querySelectorAll('.ecard');
-    const clearBtn = document.getElementById('clearBtn');
-    const noRes = document.getElementById('noResults');
-    const label = document.getElementById('listLabel');
-    clearBtn.classList.toggle('visible', val.length > 0);
+    document.getElementById('clearBtn').classList.toggle('visible', val.length > 0);
     let found = 0;
     cards.forEach(c => {
       const match = !q || (c.dataset.search || '').includes(q);
       c.classList.toggle('hidden', !match);
       if (match) found++;
     });
-    noRes.style.display = found === 0 ? 'block' : 'none';
-    label.textContent = q ? 'Paieškos rezultatai' : 'Šiandien vakare';
+    document.getElementById('noResults').style.display = found === 0 ? 'block' : 'none';
+    document.getElementById('listLabel').textContent = q ? 'Paieškos rezultatai' : 'Šiandien vakare';
   }
 
   function clearSearch() {
