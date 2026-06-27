@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <title>Visi renginiai · eikten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .sort-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: #1a1a1a; border: 0.5px solid #2a2a2a;
+      border-radius: 8px; padding: 5px 10px; cursor: pointer;
+      font-family: inherit; color: #888; font-size: 11px;
+      transition: border-color 0.15s;
+    }
+    .sort-btn:hover { border-color: #4ade80; color: #4ade80; }
+    .sort-panel {
+      display: none; background: #161616; border: 0.5px solid #2a2a2a;
+      border-radius: 12px; margin: 0 14px 8px; overflow: hidden;
+    }
+    .sort-panel.open { display: block; }
+    .sort-option {
+      padding: 10px 14px; font-size: 12px; color: #888;
+      cursor: pointer; display: flex; align-items: center;
+      gap: 8px; border-bottom: 0.5px solid #1a1a1a; transition: color 0.15s;
+    }
+    .sort-option:last-child { border-bottom: none; }
+    .sort-option:hover, .sort-option.selected { color: #4ade80; }
+    .sort-option i { font-size: 15px; }
+    .day-label {
+      font-size: 10px; color: #444; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 12px 14px 6px;
+    }
+    .list-body { padding: 0 14px 14px; }
+    .no-results { font-size: 12px; color: #444; text-align: center; padding: 32px 0; display: none; }
+    .count-badge {
+      font-size: 10px; background: #1a1a1a; border: 0.5px solid #2a2a2a;
+      border-radius: 8px; padding: 3px 8px; color: #666;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="app-header">
+      <div class="page-title">Visi renginiai</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="count-badge" id="countBadge">7 renginiai</span>
+        <button class="sort-btn" onclick="toggleSort()">
+          <i class="ti ti-arrows-sort"></i>
+          <span id="sortLabel">Atstumas</span>
+          <i class="ti ti-chevron-down" style="font-size:10px"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <i class="ti ti-search"></i>
+      <input type="text" id="searchInput" placeholder="Ieškoti renginių..." autocomplete="off" oninput="doSearch(this.value)" />
+      <i class="ti ti-x" style="font-size:14px;color:#444;cursor:pointer;" onclick="clearSearch()"></i>
+    </div>
+
+    <div class="filters">
+      <button class="chip active" onclick="setChip(this)">Visi</button>
+      <button class="chip inactive" onclick="setChip(this)"><i class="ti ti-music" style="font-size:11px"></i> Muzika</button>
+      <button class="chip inactive" onclick="setChip(this)"><i class="ti ti-glass" style="font-size:11px"></i> Barai</button>
+      <button class="chip inactive" onclick="setChip(this)"><i class="ti ti-tools-kitchen-2" style="font-size:11px"></i> Maistas</button>
+      <button class="chip inactive" onclick="setChip(this)"><i class="ti ti-ball-football" style="font-size:11px"></i> Sportas</button>
+      <button class="chip inactive" onclick="setChip(this)">Kultūra</button>
+      <button class="chip inactive" onclick="setChip(this)">Nemokama</button>
+    </div>
+  </div>
+
+  <div class="sort-panel" id="sortPanel">
+    <div class="sort-option selected" onclick="selectSort(this,'Atstumas')"><i class="ti ti-map-pin"></i>Atstumas</div>
+    <div class="sort-option" onclick="selectSort(this,'Prasideda')"><i class="ti ti-clock"></i>Prasideda greičiausiai</div>
+    <div class="sort-option" onclick="selectSort(this,'Nemokama')"><i class="ti ti-ticket"></i>Nemokama pirma</div>
+    <div class="sort-option" onclick="selectSort(this,'Populiaru')"><i class="ti ti-flame"></i>Populiaru</div>
+  </div>
+
+  <div class="scroll-area">
+
+    <div class="day-label">Dabar vyksta</div>
+    <div class="list-body">
+      <div class="ecard" data-search="gyvoji muzika džiazas keistuoliai muzika nemokama">
+        <div class="ecolor" style="background:#f87171"></div>
+        <div class="einfo">
+          <div class="ename">Gyvoji muzika — Džiazas</div>
+          <div class="emeta">Keistuoliai · Laisvės al. 93</div>
+          <div class="etags">
+            <span class="etag tag-now">Dabar</span>
+            <span class="etag tag-free">Nemokama</span>
+            <span class="etag tag-cat">Muzika</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist0">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+
+      <div class="ecard" data-search="dj techno hologram muzika barai">
+        <div class="ecolor" style="background:#a78bfa"></div>
+        <div class="einfo">
+          <div class="ename">DJ naktis — Techno</div>
+          <div class="emeta">Hologram Club · Jonavos g.</div>
+          <div class="etags">
+            <span class="etag tag-paid">€8</span>
+            <span class="etag tag-cat">Muzika</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist1">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-label">Prasideda netrukus</div>
+    <div class="list-body">
+      <div class="ecard" data-search="gatvės maisto mugė rotušė maistas nemokama">
+        <div class="ecolor" style="background:#fbbf24"></div>
+        <div class="einfo">
+          <div class="ename">Gatvės maisto mugė</div>
+          <div class="emeta">Rotušės aikštė · Nemokama</div>
+          <div class="etags">
+            <span class="etag tag-free">Nemokama</span>
+            <span class="etag tag-cat">Maistas</span>
+            <span class="etag tag-soon">Po 20 min</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist2">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+
+      <div class="ecard" data-search="standap komedija kultūra vilniaus">
+        <div class="ecolor" style="background:#38bdf8"></div>
+        <div class="einfo">
+          <div class="ename">Standap komedija</div>
+          <div class="emeta">Kaunas Comedy · Vilniaus g.</div>
+          <div class="etags">
+            <span class="etag tag-paid">€12</span>
+            <span class="etag tag-cat">Kultūra</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist3">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-label">Vėliau šiandien</div>
+    <div class="list-body">
+      <div class="ecard" data-search="atviras kinas lauke santakos parkas kultūra nemokama">
+        <div class="ecolor" style="background:#4ade80"></div>
+        <div class="einfo">
+          <div class="ename">Atviras kinas lauke</div>
+          <div class="emeta">Santakos parkas · 22:00</div>
+          <div class="etags">
+            <span class="etag tag-free">Nemokama</span>
+            <span class="etag tag-cat">Kultūra</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist4">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+
+      <div class="ecard" data-search="vinilo plokštelių mugė meno parkas muzika nemokama">
+        <div class="ecolor" style="background:#a78bfa"></div>
+        <div class="einfo">
+          <div class="ename">Vinilo plokštelių mugė</div>
+          <div class="emeta">Meno parkas · 21:30</div>
+          <div class="etags">
+            <span class="etag tag-free">Nemokama</span>
+            <span class="etag tag-cat">Muzika</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist5">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+
+      <div class="ecard" data-search="krepšinis žalgiris sportas arena nemokama">
+        <div class="ecolor" style="background:#f97316"></div>
+        <div class="einfo">
+          <div class="ename">Krepšinis — Žalgiris</div>
+          <div class="emeta">Žalgirio arena · 22:30</div>
+          <div class="etags">
+            <span class="etag tag-free">Nemokama</span>
+            <span class="etag tag-cat">Sportas</span>
+          </div>
+        </div>
+        <div class="eright">
+          <span class="dist" id="vdist6">...</span>
+          <i class="ti ti-heart heart-btn" onclick="toggleHeart(this)"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-results" id="noResults">Nerasta renginių pagal paiešką</div>
+    <div style="height:16px;"></div>
+  </div>
+
+  <div id="bottomNav">
+    <div class="nav-item" id="nav-arti"><i class="ti ti-map-pin"></i><span>Arti</span></div>
+    <div class="nav-item" id="nav-visi"><i class="ti ti-list"></i><span>Visi</span></div>
+    <div class="nav-item" id="nav-prideti"><i class="ti ti-plus-circle"></i><span>Pridėti</span></div>
+    <div class="nav-item" id="nav-issaugoti"><i class="ti ti-heart"></i><span>Išsaugoti</span></div>
+    <div class="nav-item" id="nav-profilis"><i class="ti ti-user"></i><span>Profilis</span></div>
+  </div>
+</div>
+
+<script>
+  // Real coordinates for distance calc
+  const vCoords = [
+    [54.8985, 23.9036], // jazz
+    [54.9012, 23.9210], // dj
+    [54.8972, 23.9405], // food
+    [54.8990, 23.9320], // comedy
+    [54.8920, 23.9194], // cinema
+    [54.9010, 23.9280], // vinyl
+    [54.8956, 23.9140], // basketball
+  ];
+  function haversine(la1,lo1,la2,lo2){const R=6371000,r=d=>d*Math.PI/180,dL=r(la2-la1),dG=r(lo2-lo1),a=Math.sin(dL/2)**2+Math.cos(r(la1))*Math.cos(r(la2))*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+  function fmt(m){return m<1000?Math.round(m)+'m':(m/1000).toFixed(1)+'km';}
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(p=>{
+      vCoords.forEach((c,i)=>{
+        const el=document.getElementById('vdist'+i);
+        if(el) el.textContent=fmt(haversine(p.coords.latitude,p.coords.longitude,c[0],c[1]));
+      });
+    },()=>{vCoords.forEach((_,i)=>{const el=document.getElementById('vdist'+i);if(el)el.textContent='–';});});
+  }
+
+  function setChip(el){document.querySelectorAll('.chip').forEach(c=>{c.classList.remove('active');c.classList.add('inactive');});el.classList.add('active');el.classList.remove('inactive');}
+  function toggleSort(){document.getElementById('sortPanel').classList.toggle('open');}
+  function selectSort(el,label){document.querySelectorAll('.sort-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');document.getElementById('sortLabel').textContent=label;document.getElementById('sortPanel').classList.remove('open');}
+  function toggleHeart(el){el.classList.toggle('liked');el.classList.toggle('ti-heart');el.classList.toggle('ti-heart-filled');}
+  function doSearch(val){
+    const q=val.toLowerCase().trim();
+    let found=0;
+    document.querySelectorAll('.ecard').forEach(c=>{const m=!q||(c.dataset.search||'').includes(q);c.classList.toggle('hidden',!m);if(m)found++;});
+    document.getElementById('noResults').style.display=found===0?'block':'none';
+    document.getElementById('countBadge').textContent=found+' renginiai';
+  }
+  function clearSearch(){const i=document.getElementById('searchInput');i.value='';doSearch('');}
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

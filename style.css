@@ -1,0 +1,190 @@
+/* ── Eikten shared styles ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+  overflow: hidden;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Top bar ── */
+.topbar {
+  background: #0f0f0f;
+  padding: 48px 16px 10px;
+  flex-shrink: 0;
+  border-bottom: 0.5px solid #1a1a1a;
+  z-index: 100;
+}
+.app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-name { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; color: #fff; }
+.app-name span { color: #4ade80; }
+.page-title { font-size: 20px; font-weight: 700; color: #fff; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #1a1a1a; border: 0.5px solid #2a2a2a;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: #666; font-size: 17px; transition: border-color 0.15s;
+}
+.icon-btn:hover { border-color: #4ade80; color: #4ade80; }
+
+/* ── Search bar ── */
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: #1a1a1a; border: 0.5px solid #252525;
+  border-radius: 12px; padding: 9px 12px; margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.search-bar:focus-within { border-color: #4ade80; }
+.search-bar i { font-size: 16px; color: #555; flex-shrink: 0; }
+.search-bar input {
+  background: none; border: none; outline: none;
+  font-size: 13px; color: #fff; flex: 1; font-family: inherit;
+}
+.search-bar input::placeholder { color: #444; }
+
+/* ── Filter chips ── */
+.filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.filters::-webkit-scrollbar { display: none; }
+.chip {
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+  cursor: pointer; border: none; font-family: inherit; transition: all 0.15s;
+}
+.chip.active { background: #4ade80; color: #0a0a0a; }
+.chip.inactive { background: #1e1e1e; color: #777; }
+.chip:hover:not(.active) { background: #252525; color: #aaa; }
+
+/* ── Scroll area ── */
+.scroll-area {
+  flex: 1; overflow-y: auto; min-height: 0;
+}
+.scroll-area::-webkit-scrollbar { width: 2px; }
+.scroll-area::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+
+/* ── Section labels ── */
+.section { padding: 12px 14px; border-bottom: 0.5px solid #1a1a1a; }
+.section:last-child { border-bottom: none; }
+.section-label {
+  font-size: 10px; color: #444; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px;
+}
+
+/* ── Event cards ── */
+.ecard {
+  background: #161616; border: 0.5px solid #222;
+  border-radius: 14px; padding: 12px;
+  display: flex; gap: 10px; cursor: pointer;
+  transition: border-color 0.15s; margin-bottom: 8px;
+}
+.ecard:last-child { margin-bottom: 0; }
+.ecard:hover, .ecard.active { border-color: #4ade80; }
+.ecard.hidden { display: none; }
+.ecolor { width: 3px; border-radius: 2px; flex-shrink: 0; min-height: 44px; }
+.edot { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.einfo { flex: 1; min-width: 0; }
+.ename { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.emeta { font-size: 10px; color: #555; line-height: 1.5; }
+.etags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+.etag { font-size: 9px; padding: 2px 6px; border-radius: 6px; font-weight: 500; }
+.tag-free { background: #0d1f0d; color: #4ade80; }
+.tag-paid { background: #1a1a0d; color: #fbbf24; }
+.tag-cat  { background: #1a1a2a; color: #a78bfa; }
+.tag-now  { background: #2a1212; color: #f87171; }
+.tag-soon { background: #261f08; color: #fbbf24; }
+.eright { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; flex-shrink: 0; gap: 4px; }
+.badge { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+.bnow  { background: #2a1212; color: #f87171; }
+.bsoon { background: #261f08; color: #fbbf24; }
+.blater { background: #0d1f0d; color: #4ade80; }
+.dist { font-size: 10px; color: #4ade80; font-weight: 600; }
+
+/* ── Form fields ── */
+.field-label {
+  font-size: 10px; color: #555; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px;
+}
+.field-input {
+  background: #161616; border: 0.5px solid #252525;
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 13px; color: #fff; font-family: inherit;
+  width: 100%; outline: none; transition: border-color 0.15s;
+}
+.field-input::placeholder { color: #444; }
+.field-input:focus { border-color: #4ade80; }
+textarea.field-input { resize: none; height: 72px; line-height: 1.5; }
+
+/* ── Toggle ── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #161616; border: 0.5px solid #252525;
+  border-radius: 10px; padding: 10px 12px; cursor: pointer;
+}
+.toggle-label { font-size: 13px; color: #ccc; }
+.toggle {
+  width: 38px; height: 22px; background: #2a2a2a;
+  border-radius: 11px; position: relative; transition: background 0.2s; flex-shrink: 0;
+}
+.toggle.on { background: #4ade80; }
+.toggle-knob {
+  position: absolute; width: 18px; height: 18px;
+  background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: left 0.2s;
+}
+.toggle.on .toggle-knob { left: 18px; }
+
+/* ── Buttons ── */
+.btn-primary {
+  background: #4ade80; color: #0a0a0a; border: none;
+  border-radius: 12px; padding: 13px; font-size: 14px;
+  font-weight: 700; width: 100%; font-family: inherit;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-secondary {
+  background: #1a1a1a; border: 0.5px solid #2a2a2a;
+  border-radius: 10px; padding: 8px 18px; font-size: 11px;
+  color: #888; cursor: pointer; font-family: inherit; transition: border-color 0.15s;
+}
+.btn-secondary:hover { border-color: #4ade80; color: #4ade80; }
+
+/* ── Heart button ── */
+.heart-btn { font-size: 18px; color: #333; cursor: pointer; transition: color 0.15s; }
+.heart-btn.liked { color: #f87171; }
+
+/* ── Bottom nav ── */
+#bottomNav {
+  background: #0a0a0a; border-top: 0.5px solid #1a1a1a;
+  display: flex; justify-content: space-around;
+  padding: 8px 0 24px; flex-shrink: 0;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; font-size: 9px; color: #444; cursor: pointer;
+  transition: color 0.15s; padding: 0 8px;
+}
+.nav-item.active { color: #4ade80; }
+.nav-item i { font-size: 20px; }
+
+/* ── Empty state ── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 48px 24px; gap: 12px; text-align: center;
+}
+.empty-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #161616; border: 0.5px solid #252525;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: #333;
+}
+.empty-title { font-size: 14px; font-weight: 600; color: #555; }
+.empty-sub { font-size: 12px; color: #333; line-height: 1.6; }

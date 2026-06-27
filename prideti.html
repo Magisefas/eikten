@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <title>Pridėti renginį · eikten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .form-body { padding: 16px 14px; display: flex; flex-direction: column; gap: 16px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+    .cat-item {
+      background: #161616; border: 0.5px solid #252525;
+      border-radius: 10px; padding: 10px 6px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 5px; cursor: pointer; transition: all 0.15s;
+    }
+    .cat-item.on { background: #0d1a0d; border-color: #4ade80; }
+    .cat-item i { font-size: 20px; color: #444; }
+    .cat-item.on i { color: #4ade80; }
+    .cat-item span { font-size: 10px; color: #555; }
+    .cat-item.on span { color: #4ade80; }
+    .photo-area {
+      background: #161616; border: 0.5px dashed #2a2a2a;
+      border-radius: 10px; height: 80px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 5px; cursor: pointer; transition: border-color 0.15s;
+    }
+    .photo-area:hover { border-color: #4ade80; }
+    .photo-area i { font-size: 24px; color: #333; }
+    .photo-area span { font-size: 11px; color: #444; }
+    .success-overlay {
+      display: none; position: absolute; inset: 0;
+      background: #0f0f0f; align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px; z-index: 200; text-align: center; padding: 24px;
+    }
+    .success-overlay.show { display: flex; }
+    .success-circle {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: #0d1a0d; border: 2px solid #4ade80;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .char-count { font-size: 10px; color: #444; text-align: right; margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar">
+    <div class="app-header">
+      <div class="page-title">Pridėti renginį</div>
+      <span style="font-size:12px;color:#555;cursor:pointer;" onclick="history.back()">Atšaukti</span>
+    </div>
+  </div>
+
+  <div class="scroll-area">
+    <div class="form-body">
+
+      <div>
+        <div class="field-label">Pavadinimas *</div>
+        <input class="field-input" id="fName" type="text" placeholder="pvz. Gyvoji muzika bare..." maxlength="80" oninput="document.getElementById('nameCount').textContent=this.value.length+'/80'" />
+        <div class="char-count" id="nameCount">0/80</div>
+      </div>
+
+      <div>
+        <div class="field-label">Kategorija *</div>
+        <div class="cat-grid">
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-music"></i><span>Muzika</span></div>
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-glass"></i><span>Barai</span></div>
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-tools-kitchen-2"></i><span>Maistas</span></div>
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-ball-football"></i><span>Sportas</span></div>
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-building"></i><span>Kultūra</span></div>
+          <div class="cat-item" onclick="toggleCat(this)"><i class="ti ti-trees"></i><span>Lauke</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="field-label">Vieta *</div>
+        <input class="field-input" id="fLocation" type="text" placeholder="Gatvė, pastatas ar vieta..." />
+      </div>
+
+      <div class="row2">
+        <div>
+          <div class="field-label">Data *</div>
+          <input class="field-input" id="fDate" type="date" style="color-scheme:dark;" />
+        </div>
+        <div>
+          <div class="field-label">Laikas *</div>
+          <input class="field-input" id="fTime" type="time" style="color-scheme:dark;" />
+        </div>
+      </div>
+
+      <div>
+        <div class="field-label">Aprašymas</div>
+        <textarea class="field-input" id="fDesc" placeholder="Trumpai apie renginį..." maxlength="300" oninput="document.getElementById('descCount').textContent=this.value.length+'/300'"></textarea>
+        <div class="char-count" id="descCount">0/300</div>
+      </div>
+
+      <div>
+        <div class="field-label">Nuotrauka</div>
+        <div class="photo-area" id="photoArea" onclick="triggerPhoto()">
+          <i class="ti ti-camera"></i>
+          <span>Pridėti nuotrauką</span>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="photoSelected(this)" />
+      </div>
+
+      <div class="toggle-row" id="freeToggle" onclick="toggleFree()">
+        <span class="toggle-label">Nemokamas renginys</span>
+        <div class="toggle on" id="freeSwitch"><div class="toggle-knob"></div></div>
+      </div>
+
+      <div id="priceField" style="display:none;">
+        <div class="field-label">Kaina (€)</div>
+        <input class="field-input" id="fPrice" type="number" placeholder="pvz. 10" min="0" />
+      </div>
+
+      <div>
+        <div class="field-label">Kontaktai (neprivaloma)</div>
+        <input class="field-input" id="fContact" type="text" placeholder="El. paštas, tel. nr. arba nuoroda..." />
+      </div>
+
+      <button class="btn-primary" onclick="submitEvent()">Paskelbti renginį</button>
+      <div style="height:8px;"></div>
+    </div>
+  </div>
+
+  <div id="bottomNav">
+    <div class="nav-item" id="nav-arti"><i class="ti ti-map-pin"></i><span>Arti</span></div>
+    <div class="nav-item" id="nav-visi"><i class="ti ti-list"></i><span>Visi</span></div>
+    <div class="nav-item" id="nav-prideti"><i class="ti ti-plus-circle"></i><span>Pridėti</span></div>
+    <div class="nav-item" id="nav-issaugoti"><i class="ti ti-heart"></i><span>Išsaugoti</span></div>
+    <div class="nav-item" id="nav-profilis"><i class="ti ti-user"></i><span>Profilis</span></div>
+  </div>
+
+  <!-- Success screen -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-circle"><i class="ti ti-check" style="font-size:30px;color:#4ade80;"></i></div>
+    <div style="font-size:18px;font-weight:700;color:#fff;">Renginys paskelbtas!</div>
+    <div style="font-size:12px;color:#555;line-height:1.6;">Tavo renginys dabar matomas žemėlapyje ir renginių sąraše.</div>
+    <button class="btn-primary" style="max-width:200px;" onclick="window.location.href='index.html'">Grįžti į žemėlapį</button>
+    <button class="btn-secondary" onclick="resetForm()">Pridėti dar vieną</button>
+  </div>
+
+</div>
+<script>
+  // Set today as default date
+  document.getElementById('fDate').valueAsDate = new Date();
+
+  function toggleCat(el) { el.classList.toggle('on'); }
+
+  let isFree = true;
+  function toggleFree() {
+    isFree = !isFree;
+    document.getElementById('freeSwitch').classList.toggle('on', isFree);
+    document.getElementById('priceField').style.display = isFree ? 'none' : 'block';
+  }
+
+  function triggerPhoto() { document.getElementById('photoInput').click(); }
+  function photoSelected(input) {
+    if (input.files && input.files[0]) {
+      const area = document.getElementById('photoArea');
+      area.innerHTML = '<i class="ti ti-check" style="font-size:24px;color:#4ade80;"></i><span style="font-size:11px;color:#4ade80;">Nuotrauka įkelta!</span>';
+    }
+  }
+
+  function submitEvent() {
+    const name = document.getElementById('fName').value.trim();
+    const loc  = document.getElementById('fLocation').value.trim();
+    const date = document.getElementById('fDate').value;
+    const time = document.getElementById('fTime').value;
+    if (!name || !loc || !date || !time) {
+      alert('Prašome užpildyti visus privalomus laukus (*)');
+      return;
+    }
+    // Later: save to Supabase database here
+    document.getElementById('successOverlay').classList.add('show');
+  }
+
+  function resetForm() {
+    document.getElementById('successOverlay').classList.remove('show');
+    document.getElementById('fName').value = '';
+    document.getElementById('fLocation').value = '';
+    document.getElementById('fTime').value = '';
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fContact').value = '';
+    document.getElementById('fPrice').value = '';
+    document.getElementById('nameCount').textContent = '0/80';
+    document.getElementById('descCount').textContent = '0/300';
+    document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('on'));
+    document.getElementById('photoArea').innerHTML = '<i class="ti ti-camera"></i><span>Pridėti nuotrauką</span>';
+    document.getElementById('fDate').valueAsDate = new Date();
+  }
+</script>
+<script src="nav.js"></script>
+</body>
+</html>

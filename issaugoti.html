@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <title>Išsaugoti · eikten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .tabs {
+      display: flex; gap: 0; background: #161616;
+      border-radius: 10px; padding: 3px; margin-top: 10px;
+    }
+    .tab {
+      flex: 1; text-align: center; font-size: 11px; font-weight: 500;
+      padding: 7px; border-radius: 8px; cursor: pointer;
+      color: #555; transition: all 0.15s; font-family: inherit; border: none; background: none;
+    }
+    .tab.active { background: #0f0f0f; color: #fff; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .notify-row { display: flex; align-items: center; gap: 5px; margin-top: 4px; }
+    .notify-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; flex-shrink: 0; }
+    .notify-text { font-size: 9px; color: #4ade80; }
+    .going-badge { font-size: 9px; padding: 2px 7px; border-radius: 6px; font-weight: 600; background: #0d1f0d; color: #4ade80; }
+    .coll-card {
+      background: #161616; border: 0.5px solid #222; border-radius: 12px;
+      padding: 12px; display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: border-color 0.15s; margin-bottom: 8px;
+    }
+    .coll-card:hover { border-color: #4ade80; }
+    .coll-icon {
+      width: 38px; height: 38px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .week-stats {
+      background: #111; border: 0.5px solid #1a1a1a;
+      border-radius: 12px; padding: 12px; display: flex; gap: 0;
+    }
+    .stat-col { flex: 1; text-align: center; }
+    .stat-col + .stat-col { border-left: 0.5px solid #1a1a1a; }
+    .stat-num { font-size: 18px; font-weight: 700; }
+    .stat-lbl { font-size: 9px; color: #444; margin-top: 2px; }
+    .remove-btn { font-size: 16px; color: #f87171; cursor: pointer; transition: color 0.15s; }
+    .remove-btn:hover { color: #333; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div class="topbar" style="padding-bottom:6px;">
+    <div class="app-header">
+      <div class="page-title">Išsaugoti</div>
+      <span style="font-size:11px;color:#555;cursor:pointer;" onclick="if(confirm('Išvalyti viską?')){document.querySelectorAll('.ecard').forEach(c=>c.remove());}">Išvalyti</span>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('saved')">Išsaugoti</button>
+      <button class="tab" onclick="switchTab('going')">Einu</button>
+      <button class="tab" onclick="switchTab('lists')">Sąrašai</button>
+    </div>
+  </div>
+
+  <div class="scroll-area">
+
+    <!-- Saved panel -->
+    <div class="panel active" id="panel-saved">
+      <div class="section">
+        <div class="section-label">Šiandien</div>
+        <div class="ecard" id="s0">
+          <div class="ecolor" style="background:#f87171"></div>
+          <div class="einfo">
+            <div class="ename">Gyvoji muzika — Džiazas</div>
+            <div class="emeta">Keistuoliai · Šiandien · 20:00</div>
+            <div class="etags"><span class="etag tag-free">Nemokama</span><span class="etag tag-cat">Muzika</span></div>
+            <div class="notify-row"><div class="notify-dot"></div><div class="notify-text">Primins likus 30 min</div></div>
+          </div>
+          <div class="eright">
+            <i class="ti ti-x remove-btn" onclick="removeCard('s0')"></i>
+          </div>
+        </div>
+        <div class="ecard" id="s1">
+          <div class="ecolor" style="background:#fbbf24"></div>
+          <div class="einfo">
+            <div class="ename">Gatvės maisto mugė</div>
+            <div class="emeta">Rotušės a. · Šiandien · 21:30</div>
+            <div class="etags"><span class="etag tag-free">Nemokama</span><span class="etag tag-soon">Po 20 min</span></div>
+          </div>
+          <div class="eright">
+            <i class="ti ti-x remove-btn" onclick="removeCard('s1')"></i>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Rytoj</div>
+        <div class="ecard" id="s2">
+          <div class="ecolor" style="background:#a78bfa"></div>
+          <div class="einfo">
+            <div class="ename">DJ naktis — Techno</div>
+            <div class="emeta">Hologram Club · Rytoj · 22:00</div>
+            <div class="etags"><span class="etag tag-paid">€8</span><span class="etag tag-cat">Muzika</span></div>
+          </div>
+          <div class="eright">
+            <i class="ti ti-x remove-btn" onclick="removeCard('s2')"></i>
+          </div>
+        </div>
+        <div class="ecard" id="s3">
+          <div class="ecolor" style="background:#38bdf8"></div>
+          <div class="einfo">
+            <div class="ename">Standap komedija</div>
+            <div class="emeta">Kaunas Comedy · Rytoj · 21:00</div>
+            <div class="etags"><span class="etag tag-paid">€12</span><span class="etag tag-cat">Kultūra</span></div>
+          </div>
+          <div class="eright">
+            <i class="ti ti-x remove-btn" onclick="removeCard('s3')"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Going panel -->
+    <div class="panel" id="panel-going">
+      <div class="section">
+        <div class="section-label">Šiandien einu</div>
+        <div class="ecard" style="border-color:#4ade8033;background:#0d1a0d;">
+          <div class="ecolor" style="background:#4ade80"></div>
+          <div class="einfo">
+            <div class="ename">Atviras kinas lauke</div>
+            <div class="emeta">Santakos parkas · 22:00</div>
+            <div class="etags"><span class="etag tag-free">Nemokama</span></div>
+            <div class="notify-row"><div class="notify-dot"></div><div class="notify-text">34 žmonės eina</div></div>
+          </div>
+          <div class="eright"><span class="going-badge">✓ Einu</span></div>
+        </div>
+        <div class="ecard" style="border-color:#4ade8033;background:#0d1a0d;">
+          <div class="ecolor" style="background:#f97316"></div>
+          <div class="einfo">
+            <div class="ename">Krepšinis — Žalgiris</div>
+            <div class="emeta">Žalgirio arena · 22:30</div>
+            <div class="etags"><span class="etag tag-free">Nemokama</span></div>
+            <div class="notify-row"><div class="notify-dot"></div><div class="notify-text">128 žmonės eina</div></div>
+          </div>
+          <div class="eright"><span class="going-badge">✓ Einu</span></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">Savaitės planas</div>
+        <div class="week-stats">
+          <div class="stat-col"><div class="stat-num" style="color:#4ade80;">2</div><div class="stat-lbl">Renginiai</div></div>
+          <div class="stat-col"><div class="stat-num" style="color:#fbbf24;">162</div><div class="stat-lbl">Žmonių eina</div></div>
+          <div class="stat-col"><div class="stat-num" style="color:#a78bfa;">1.2km</div><div class="stat-lbl">Atstumas</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lists panel -->
+    <div class="panel" id="panel-lists">
+      <div class="section">
+        <div class="section-label">Mano sąrašai</div>
+        <div class="coll-card">
+          <div class="coll-icon" style="background:#1a1a2a"><i class="ti ti-music" style="font-size:18px;color:#a78bfa;"></i></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#fff;">Muzikos vakarai</div><div style="font-size:10px;color:#555;margin-top:2px;">6 renginiai</div></div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:#333;"></i>
+        </div>
+        <div class="coll-card">
+          <div class="coll-icon" style="background:#1a2a1a"><i class="ti ti-ticket" style="font-size:18px;color:#4ade80;"></i></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#fff;">Nemokama šį savaitgalį</div><div style="font-size:10px;color:#555;margin-top:2px;">4 renginiai</div></div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:#333;"></i>
+        </div>
+        <div class="coll-card">
+          <div class="coll-icon" style="background:#2a1a1a"><i class="ti ti-flame" style="font-size:18px;color:#f97316;"></i></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#fff;">Karšti taškai</div><div style="font-size:10px;color:#555;margin-top:2px;">3 renginiai</div></div>
+          <i class="ti ti-chevron-right" style="font-size:14px;color:#333;"></i>
+        </div>
+        <div style="text-align:center;padding:12px 0;">
+          <button class="btn-secondary" onclick="this.textContent='Sąrašas sukurtas! ✓'">+ Naujas sąrašas</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+  </div>
+
+  <div id="bottomNav">
+    <div class="nav-item" id="nav-arti"><i class="ti ti-map-pin"></i><span>Arti</span></div>
+    <div class="nav-item" id="nav-visi"><i class="ti ti-list"></i><span>Visi</span></div>
+    <div class="nav-item" id="nav-prideti"><i class="ti ti-plus-circle"></i><span>Pridėti</span></div>
+    <div class="nav-item" id="nav-issaugoti"><i class="ti ti-heart"></i><span>Išsaugoti</span></div>
+    <div class="nav-item" id="nav-profilis"><i class="ti ti-user"></i><span>Profilis</span></div>
+  </div>
+</div>
+<script>
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t,i)=>{ t.classList.toggle('active',['saved','going','lists'][i]===name); });
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('panel-'+name).classList.add('active');
+  }
+  function removeCard(id) {
+    const c = document.getElementById(id);
+    c.style.transition = 'all 0.25s ease';
+    c.style.opacity = '0';
+    c.style.transform = 'translateX(20px)';
+    setTimeout(() => c.remove(), 250);
+  }
+</script>
+<script src="nav.js"></script>
+</body>
+</html>
